@@ -957,28 +957,15 @@ int generateMTRandom(unsigned int s, int range)
 
 
 static const int64 nMinSubsidy = 1 * COIN;
-static const int CUTOFF_HEIGHT = 20160;	// Height at the end of 14 days
+static const int CUTOFF_HEIGHT = 1;	// Height at the end of 14 days
 // miner's coin base reward based on nBits
 int64 GetProofOfWorkReward(int nHeight, int64 nFees)
 {
-	int64 nSubsidy = 10000 * COIN;
+	int64 nSubsidy = 0 * COIN;
 
 	if (nHeight ==1)
 	{
-		nSubsidy = 3240000100 * COIN; //Micryon : SCAM-revert reflects the real gigantic premine that has now been banned, see : https://bitcointalk.org/index.php?topic=595999.0
-	}
-	else if ((nHeight >1) && (nHeight <= 1000))
-	{
-		nSubsidy = 100 * COIN;
-	}
-	else if(nHeight > 10080)
-	{
-		if(nHeight > CUTOFF_HEIGHT)
-		{
-			return nMinSubsidy + nFees;
-		}
-		
-		nSubsidy = 5000 * COIN;
+		nSubsidy = 1000000 * COIN; //Micryon : SCAM-revert reflects the real gigantic premine that has now been banned, see : https://bitcointalk.org/index.php?topic=595999.0
 	}
 
     return nSubsidy + nFees;
@@ -986,18 +973,22 @@ int64 GetProofOfWorkReward(int nHeight, int64 nFees)
 
 // miner's coin stake reward based on nBits and coin age spent (coin-days)
 // simple algorithm, not depend on the diff
-const int YEARLY_BLOCKCOUNT = 525600;	// 365 * 1440
-const int FORK_BLOCKCOUNT =  72000; // (20+30) *1440 Micryon
-const int MONTHLY_BLOCKCOUNT = 43200; // 30*1440 Micryon new schedule
+const int YEARLY_BLOCKCOUNT = 2073600;	// 365 * 1440
+const int FORK_BLOCKCOUNT =  0; // (20+30) *1440 Micryon
+const int MONTHLY_BLOCKCOUNT = 172800; // 30*1440 Micryon new schedule
 
 int64 GetProofOfStakeReward(int64 nCoinAge, unsigned int nBits, unsigned int nTime, int nHeight)
 {
     int64 nRewardCoinYear;
+    
+    nRewardCoinYear = MAX_MINT_PROOF_OF_STAKE;
+    
+    /*
     if(nHeight < YEARLY_BLOCKCOUNT)
-      nRewardCoinYear = 7.15 * MAX_MINT_PROOF_OF_STAKE;  //original ~100%
-    else
-      nRewardCoinYear = MAX_MINT_PROOF_OF_STAKE / 5;
-	
+    {
+      nRewardCoinYear = MAX_MINT_PROOF_OF_STAKE;  //original ~100%
+    } 
+	*/	
 	int64 nSubsidy = nCoinAge * nRewardCoinYear / 365;
 	if (fDebug && GetBoolArg("-printcreation"))
 		printf("GetProofOfStakeReward(): create=%s nCoinAge=%"PRI64d" nBits=%d\n", FormatMoney(nSubsidy).c_str(), nCoinAge, nBits);
